@@ -9,15 +9,28 @@ const reviewsContainerStyle = {
 class Body extends React.Component {
   constructor(props) {
    super(props);
+   this.state = {
+     squareClicked: false,
+     reviewSquareId: "yo"
+   }
+   this.selectSquare = this.selectSquare.bind(this);
  }
-  render() {
-    const { reviews } = this.props;
-    const reviewSquares = reviews.map((review) =>
-      <ReviewSquare review={review}/>
+ selectSquare(key) {
+   this.setState((state) => ({
+     squareClicked: true,
+     reviewSquareId: key
+   }));
+   console.log(key)
+ }
+ render() {
+   const { reviews } = this.props;
+   const reviewSquares = reviews.map((review) =>
+      <ReviewSquare key={review['id']} id={review['id']} review={review} selSquare={this.selectSquare}/>
     );
 
     return (
       <>
+      {this.state.reviewSquareId}
         <div style={reviewsContainerStyle}>
           {reviewSquares}
         </div>

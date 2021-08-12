@@ -88,19 +88,21 @@ class ReviewSquare extends React.Component {
   constructor(props) {
     super(props);
   }
-
   render() {
-    const { review } = this.props;
+    const { id, review, selSquare } = this.props;
     const { author, place, published_at, rating, content } = review;
     const date = parseDate(published_at);
     const starIter = new Array(rating).fill(0);
     const stars = starIter.map(() =>
       <img src={reviewStar} style={reviewStarStyle} alt="stars"/>
     );
+    const selSquareWrapper = () => {
+      selSquare(id);
+    }
 
     return (
       <>
-        <div style={reviewSquareStyle}>
+        <div style={reviewSquareStyle} onClick={selSquareWrapper}>
 
           <div style={contentStyle}>
             <p>{place}</p>
