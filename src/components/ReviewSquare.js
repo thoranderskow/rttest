@@ -1,33 +1,13 @@
 import React from 'react';
 import reviewStar from '../reviewStar.png'
 
-const reviewSquareStyle = {
-  width: "250px",
-  height: "200px",
-  marginLeft: "120px",
-  marginTop: "40px",
-  marginBottom: "50px",
-  backgroundColor: "white",
-  display: "flex",
-  flexDirection: "column"
-}
-
-const contentStyle = {
+const allTextStyle = {
   marginLeft: "15px"
 }
 
 const reviewStarStyle = {
   width: "25px",
   height: "20px"
-}
-
-/* styling found at https://stackoverflow.com/a/19045706/10827114 */
-const reviewStyle = {
-  textOverflow: "ellipsis",
-  display: "block",
-  width: "90%",
-  overflow: "hidden",
-  whiteSpace: "nowrap",
 }
 
 const nameDateContainerStyle = {
@@ -80,13 +60,18 @@ function parseDate(str) {
       retstr = "12";
       break;
   }
-  retstr += "/" + str[2] + "/" + str[3];
+  retstr += '/' + str[2] + '/' + str[3];
   return retstr
 }
 
 class ReviewSquare extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      width: this.props.width,
+      height: this.props.height,
+      hideOverflow: this.props.hideOverflow
+    }
   }
   render() {
     const { id, review, selSquare } = this.props;
@@ -99,17 +84,36 @@ class ReviewSquare extends React.Component {
     const selSquareWrapper = () => {
       selSquare(id);
     }
+    let reviewSquareStyle = {
+      width: this.state.width,
+      height: this.state.height,
+      marginLeft: "120px",
+      marginTop: "40px",
+      marginBottom: "50px",
+      backgroundColor: "white",
+      display: "flex",
+      flexDirection: "column",
+    }
+    /* styling found at https://stackoverflow.com/a/19045706/10827114 */
+    const reviewContentStyle = this.state.hideOverflow ? {
+      textOverflow: "ellipsis",
+      display: "block",
+      width: "90%",
+      overflow: "hidden",
+      whiteSpace: "nowrap",
+    } : {
+    }
 
     return (
       <>
         <div style={reviewSquareStyle} onClick={selSquareWrapper}>
 
-          <div style={contentStyle}>
+          <div style={allTextStyle}>
             <p>{place}</p>
             <div>
               {stars}
             </div>
-            <p style={reviewStyle}>{content}</p>
+            <p style={reviewContentStyle}>{content}</p>
             <div style={nameDateContainerStyle}>
               <div>{author}</div>
               <div style={dateStyle}>{date}</div>
