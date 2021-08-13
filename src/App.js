@@ -3,7 +3,7 @@ import Body from './components/Body.js'
 import Header from './components/Header.js'
 
 /* Load in the JSON of reviews here */
-const reviews = require('./reviews.json')
+const reviews = require('./jsons/reviews.json')
 
 class Index extends React.Component {
   constructor(props) {
