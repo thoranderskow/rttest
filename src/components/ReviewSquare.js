@@ -1,13 +1,34 @@
 import React from 'react';
+import chatBubble from '../bluespeechbubble.png'
 import reviewStar from '../reviewStar.png'
 
-const allTextStyle = {
-  marginLeft: "15px"
+/*
+  Uses state to allow it to generate a larger review square in LargerReview.js
+  and many small ones in Body.js.
+*/
+
+const authorNameStyle = {
+  fontFamily: '"Monaco", Times, serif',
+  fontSize: "0.7em"
 }
 
-const reviewStarStyle = {
-  width: "25px",
-  height: "20px"
+const chatBubbleStyle = {
+  height: "20px",
+  width: "20px",
+  marginTop: "5px",
+  marginRight: "5px"
+}
+
+const dateStyle = {
+  marginLeft: "20px",
+  color: "#c9c9c9"
+}
+
+const headerStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  fontWeight: "bold",
+  fontFamily: '"Monaco", Times, serif',
 }
 
 const nameDateContainerStyle = {
@@ -15,8 +36,9 @@ const nameDateContainerStyle = {
   marginTop: "60px"
 }
 
-const dateStyle = {
-  marginLeft: "20px"
+const reviewStarStyle = {
+  width: "25px",
+  height: "20px"
 }
 
 function parseDate(str) {
@@ -74,7 +96,7 @@ class ReviewSquare extends React.Component {
     }
   }
   render() {
-    const { id, review, selSquare } = this.props;
+    const { id, review, selSquare, replyExists } = this.props;
     const { author, place, published_at, rating, content } = review;
     const date = parseDate(published_at);
     const starIter = new Array(rating).fill(0);
@@ -84,24 +106,30 @@ class ReviewSquare extends React.Component {
     const selSquareWrapper = () => {
       selSquare(id);
     }
-    let reviewSquareStyle = {
-      width: this.state.width,
-      height: this.state.height,
-      marginLeft: "120px",
-      marginTop: "40px",
-      marginBottom: "50px",
-      backgroundColor: "white",
-      display: "flex",
-      flexDirection: "column",
+    /* styling placed here so as to use state as part of css */
+    const allTextStyle = {
+      marginLeft: this.state.hideOverflow ? "15px" : "50px"
     }
     /* styling found at https://stackoverflow.com/a/19045706/10827114 */
-    const reviewContentStyle = this.state.hideOverflow ? {
+    const reviewContentStyle = {
       textOverflow: "ellipsis",
       display: "block",
       width: "90%",
       overflow: "hidden",
       whiteSpace: "nowrap",
-    } : {
+      color: "#858585",
+      marginRight: this.state.hideOverflow ? "0px" : "50px"
+    }
+    const reviewSquareStyle = {
+      width: this.state.width,
+      height: this.state.height,
+      marginLeft: "120px",
+      marginTop: this.state.hideOverflow ? "40px" : "20px",
+      marginBottom: "50px",
+      backgroundColor: "white",
+      display: "flex",
+      flexDirection: "column",
+      boxShadow: "0 2px 20px rgba(0, 0, 0, 0.2)"
     }
 
     return (
@@ -109,13 +137,16 @@ class ReviewSquare extends React.Component {
         <div style={reviewSquareStyle} onClick={selSquareWrapper}>
 
           <div style={allTextStyle}>
-            <p>{place}</p>
+            <div style={headerStyle}>
+              <p>{place}</p>
+              {replyExists ? <img style={chatBubbleStyle} src={chatBubble}/> : <div/>}
+            </div>
             <div>
               {stars}
             </div>
             <p style={reviewContentStyle}>{content}</p>
             <div style={nameDateContainerStyle}>
-              <div>{author}</div>
+              <div style={authorNameStyle}>{author}</div>
               <div style={dateStyle}>{date}</div>
             </div>
           </div>

@@ -1,15 +1,52 @@
 import React from 'react';
 import ReviewSquare from './ReviewSquare.js'
 
+/*
+  Responses are stored on https://jsonbin.io/, in a list of objects that
+  contains the field postid, which refers to the review id of the review
+  that the response was made to.
+*/
+
+const editButtonStyle = {
+  cursor: "pointer",
+  alignSelf: "flex-end",
+  marginRight: "10px",
+  marginTop: "5px",
+  marginBottom: "5px"
+}
+
+const replierNameStyle = {
+  marginTop: "30px",
+  fontFamily: '"Monaco", Times, serif',
+  fontSize: "0.7em"
+}
+
+const replyBoxContentStyle = {
+  marginLeft: "50px",
+  display: "flex",
+  flexDirection: "column"
+}
+
 const replyBoxStyle = {
   width: "85%",
   height: "100px",
   backgroundColor: "white",
   marginLeft: "120px",
+  boxShadow: "0 2px 20px rgba(0, 0, 0, 0.2)"
 }
 
-const replyBoxContentStyle = {
-  marginLeft: "15px"
+const replyStyle = {
+  color: "#858585"
+}
+
+const returnButtonStyle = {
+  marginTop: "10px",
+  marginLeft: "120px",
+  cursor: "pointer"
+}
+
+const submitButtonStyle = {
+  width: "70px"
 }
 
 const textAreaStyle = {
@@ -21,10 +58,6 @@ const textInputStyle = {
   height: "20px"
 }
 
-const editStyle = {
-  cursor: "pointer"
-}
-
 class LargerReview extends React.Component {
   constructor(props) {
    super(props);
@@ -33,11 +66,14 @@ class LargerReview extends React.Component {
      message: "",
      reply: "",
      allComments: [],
-     responsePresent: false
+     responsePresent: false,
+     leaveReplyPressed: false
    }
    this.handleChange = this.handleChange.bind(this);
    this.submitComment = this.submitComment.bind(this);
    this.startEditing = this.startEditing.bind(this);
+   this.cancelEdit = this.cancelEdit.bind(this);
+   this.revertWrapper = this.revertWrapper.bind(this);
  }
  handleChange(event) {
     event.preventDefault();
@@ -45,7 +81,6 @@ class LargerReview extends React.Component {
   }
   componentDidMount() {
     let req = new XMLHttpRequest();
-
     req.onreadystatechange = () => {
       if (req.readyState == XMLHttpRequest.DONE) {
         const comments = JSON.parse(req.responseText);
@@ -54,9 +89,12 @@ class LargerReview extends React.Component {
           return obj.postid === this.props.children['id']
         });
         if (comment.length !== 0) {
-          this.setState({responsePresent: true})
-          this.setState({action: "Edit response"})
-          this.setState({reply: comment[0]['reply']})
+          this.setState({
+            responsePresent: true,
+            action: "Edit Response",
+            reply: comment[0]['reply'],
+            leaveReplyPressed: true
+          });
         }
       }
     };
@@ -81,10 +119,12 @@ class LargerReview extends React.Component {
       postid : id,
       reply : this.state.message
     });
-    this.setState({allComments: newComments});
-    this.setState({responsePresent: true});
-    this.setState({reply: this.state.message});
-
+    this.setState({
+      allComments: newComments,
+      responsePresent: true,
+      reply: this.state.message,
+      action: "Edit Response"
+    });
     req.open("PUT", "https://api.jsonbin.io/b/6119422653ca131484aa3c25", true);
     req.setRequestHeader("Content-Type", "application/json");
     req.setRequestHeader("secret-key", "$2b$10$W5Z5x.jATbqUl7Bpw.DMTuTUGv37YB5rLfkN476XHZq5HsIE1flZK");
@@ -92,19 +132,39 @@ class LargerReview extends React.Component {
     req.send(JSON.stringify(newComments));
   }
   startEditing() {
-    this.setState({responsePresent: false});
+    this.setState({
+      responsePresent: false,
+      action: "Cancel Edit"
+    });
+  }
+  cancelEdit() {
+    if (this.state.action === "Leave a reply") {
+      console.log("here")
+      this.setState({leaveReplyPressed : true});
+      return
+    }
+    this.setState({
+      responsePresent: true,
+      message: "",
+      action: "Edit Response"
+    });
+  }
+  revertWrapper() {
+    this.props.revert();
   }
   render() {
     return (
       <>
+      <button style={returnButtonStyle} onClick={this.revertWrapper}>Return</button>
         <ReviewSquare id={this.props.children['id']} review={this.props.children} selSquare={(k) => {console.log("todo")}} width="85%"/>
         <div style={replyBoxStyle}>
           <div style={replyBoxContentStyle}>
-            {this.state.responsePresent ? <a style={editStyle} onClick={this.startEditing}>{this.state.action}</a> : this.state.action}
+            {this.state.responsePresent ? <button style={editButtonStyle} onClick={this.startEditing}>{this.state.action}</button> : <button style={editButtonStyle} onClick={this.cancelEdit}>{this.state.action}</button>}
             <div style={textAreaStyle}>
-              {this.state.responsePresent ? <div>{this.state.reply}</div> : <textarea id="reply" style={textInputStyle} type='text' value={this.state.message} onChange={this.handleChange} placeholder='enter comment'/>}
+              {this.state.responsePresent ? <div style={replyStyle}>{this.state.reply}</div> : (this.state.leaveReplyPressed ? <textarea id="reply" style={textInputStyle} type='text' value={this.state.message} onChange={this.handleChange} placeholder='enter comment'/> : <div>No response yet. </div>)}
             </div>
-            {this.state.responsePresent ? <div/> : <button onClick={this.submitComment}>submit</button>}
+            {this.state.responsePresent ? <div/> : (this.state.leaveReplyPressed ? <button style={submitButtonStyle} onClick={this.submitComment}>submit</button> : <div/>)}
+            {this.state.responsePresent ? <div style={replierNameStyle}>John Doe</div> : <div/>}
           </div>
         </div>
       </>

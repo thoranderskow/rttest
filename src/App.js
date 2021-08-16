@@ -13,7 +13,7 @@ class Index extends React.Component {
     return (
       <>
         <Header />
-        {true ? <Body reviews={reviews}/> : <Header />}
+        <Body reviews={reviews}/>
       </>
     )
   }
