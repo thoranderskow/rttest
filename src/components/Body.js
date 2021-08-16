@@ -32,7 +32,7 @@ class Body extends React.Component {
      }
    };
    req.open("GET", "https://api.jsonbin.io/b/6119422653ca131484aa3c25/4", true);
-   req.setRequestHeader("secret-key", "$2b$10$W5Z5x.jATbqUl7Bpw.DMTuTUGv37YB5rLfkN476XHZq5HsIE1flZK");
+   req.setRequestHeader("secret-key", process.env.SECRET_KEY);
    req.send();
  }
  selectSquare(key) {
