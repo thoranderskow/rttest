@@ -111,14 +111,16 @@ class ReviewSquare extends React.Component {
       marginLeft: this.state.hideOverflow ? "15px" : "50px"
     }
     /* styling found at https://stackoverflow.com/a/19045706/10827114 */
-    const reviewContentStyle = {
+    const reviewContentStyle = this.state.hideOverflow ? {
       textOverflow: "ellipsis",
       display: "block",
       width: "90%",
       overflow: "hidden",
       whiteSpace: "nowrap",
       color: "#858585",
-      marginRight: this.state.hideOverflow ? "0px" : "50px"
+    } : {
+      color: "#858585",
+      marginRight: "50px"
     }
     const reviewSquareStyle = {
       width: this.state.width,
